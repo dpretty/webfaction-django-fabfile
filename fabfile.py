@@ -7,7 +7,7 @@ and supervisor.
 
 from fabric.api import *
 from fabric.contrib.files import upload_template, exists, append
-import xmlrpclib
+import xmlrpc.client
 import sys
 
 import string, random
@@ -15,7 +15,7 @@ import string, random
 try:
     from fabsettings import WF_HOST, PROJECT_NAME, REPOSITORY, USER, PASSWORD, VIRTUALENVS, SETTINGS_SUBDIR
 except ImportError:
-    print "ImportError: Couldn't find fabsettings.py, it either does not exist or giving import problems (missing settings)"
+    print("ImportError: Couldn't find fabsettings.py, it either does not exist or giving import problems (missing settings)")
     sys.exit(1)
 
 env.hosts           = [WF_HOST]
@@ -99,7 +99,7 @@ def install_supervisor():
                         'user':     env.user,
                         'virtualenv': env.supervisor_ve_dir,
                     },
-                    mode=0750,
+                    mode=0o750,
                     )
 
 
@@ -128,7 +128,7 @@ def reload_app(arg=None):
     with cd(env.project_dir):
         run('git pull')
 
-    if arg <> "quick":
+    if arg != "quick":
         with cd(env.project_dir):
             _ve_run(env.project, "easy_install -i http://downloads.egenix.com/python/index/ucs4/ egenix-mx-base")
             _ve_run(env.project, "pip install -r requirements.pip")
@@ -155,7 +155,7 @@ def _create_ve(name):
         with cd(env.virtualenv_dir):
             run('mkvirtualenv -p /usr/local/bin/python2.7 --no-site-packages %s' % name)
     else:
-        print "Virtualenv with name %s already exists. Skipping." % name
+        print("Virtualenv with name %s already exists. Skipping." % name)
 
 def _ve_run(ve,cmd):
     """virtualenv wrapper for fabric commands
@@ -165,15 +165,15 @@ def _ve_run(ve,cmd):
 def _webfaction_create_app(app):
     """creates a "custom app with port" app on webfaction using the webfaction public API.
     """
-    server = xmlrpclib.ServerProxy('https://api.webfaction.com/')
+    server = xmlrpc.client.ServerProxy('https://api.webfaction.com/')
     session_id, account = server.login(USER, PASSWORD)
     try:
         response = server.create_app(session_id, app, 'custom_app_with_port', False, '')
-        print "App on webfaction created: %s" % response
+        print("App on webfaction created: %s" % response)
         return response
 
-    except xmlrpclib.Fault:
-        print "Could not create app on webfaction %s, app name maybe already in use" % app
+    except xmlrpc.client.Fault:
+        print("Could not create app on webfaction %s, app name maybe already in use" % app)
         sys.exit(1)
 
 
