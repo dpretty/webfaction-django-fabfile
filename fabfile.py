@@ -29,6 +29,7 @@ env.settings_dir    = env.project_dir + '/' + SETTINGS_SUBDIR
 env.supervisor_dir  = env.home + '/webapps/supervisor'
 env.virtualenv_dir  = VIRTUALENVS
 env.supervisor_ve_dir = env.virtualenv_dir + '/supervisor'
+env.template_dir    = 'fabric_templates'
 
 def deploy():
     bootstrap()
@@ -53,7 +54,7 @@ def install_app():
     env.app_port = response['port']
 
     # upload template to supervisor conf
-    upload_template('templates/gunicorn.conf',
+    upload_template('%s/gunicorn.conf' % env.template_dir,
                     '%s/conf.d/%s.conf' % (env.supervisor_dir,env.project),
                     {
                         'project': env.project,
@@ -81,7 +82,7 @@ def install_supervisor():
     if not exists(env.supervisor_ve_dir + 'bin/supervisord'):
         _ve_run('supervisor','pip install supervisor')
     # uplaod supervisor.conf template
-    upload_template('templates/supervisord.conf',
+    upload_template('%s/supervisord.conf' % env.template_dir,
                      '%s/supervisord.conf' % env.supervisor_dir,
                     {
                         'user':     env.user,
@@ -92,7 +93,7 @@ def install_supervisor():
                     )
 
     # upload and install crontab
-    upload_template('templates/start_supervisor.sh',
+    upload_template('%s/start_supervisor.sh' % env.template_dir,
                     '%s/start_supervisor.sh' % env.supervisor_dir,
                      {
                         'user':     env.user,
