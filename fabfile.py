@@ -42,9 +42,9 @@ def deploy():
 
 
 def bootstrap():
-    run('mkdir -p %s/lib/python2.7' % env.home)
-    run('easy_install-2.7 pip')
-    run('pip-2.7 install virtualenv virtualenvwrapper')
+    run('mkdir -p %s/lib/python3.3' % env.home)
+    run('easy_install-3.3 pip')
+    run('pip-3.3 install virtualenv virtualenvwrapper')
 
 
 def install_app():
@@ -130,9 +130,7 @@ def reload_app(arg=None):
 
     if arg != "quick":
         with cd(env.project_dir):
-            _ve_run(env.project, "easy_install -i http://downloads.egenix.com/python/index/ucs4/ egenix-mx-base")
-            _ve_run(env.project, "pip install -r requirements.pip")
-            _ve_run(env.project, "pip install -e ./")
+            _ve_run(env.project, "pip install -r requirements/production.txt")
             _ve_run(env.project, "manage.py syncdb")
             _ve_run(env.project, "manage.py collectstatic")
 
@@ -153,7 +151,7 @@ def _create_ve(name):
     """
     if not exists(env.virtualenv_dir + '/name'):
         with cd(env.virtualenv_dir):
-            run('mkvirtualenv -p /usr/local/bin/python2.7 --no-site-packages %s' % name)
+            run('mkvirtualenv -p /usr/local/bin/python3.3 --no-site-packages %s' % name)
     else:
         print("Virtualenv with name %s already exists. Skipping." % name)
 
