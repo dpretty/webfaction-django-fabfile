@@ -7,7 +7,7 @@ and supervisor.
 
 from fabric.api import *
 from fabric.contrib.files import upload_template, exists, append
-import xmlrpc.client
+import xmlrpclib
 import sys
 
 import string, random
@@ -99,7 +99,7 @@ def install_supervisor():
                         'user':     env.user,
                         'virtualenv': env.supervisor_ve_dir,
                     },
-                    mode=0o750,
+                    mode=0750,
                     )
 
 
@@ -163,14 +163,14 @@ def _ve_run(ve,cmd):
 def _webfaction_create_app(app):
     """creates a "custom app with port" app on webfaction using the webfaction public API.
     """
-    server = xmlrpc.client.ServerProxy('https://api.webfaction.com/')
+    server = xmlrpclib.ServerProxy('https://api.webfaction.com/')
     session_id, account = server.login(USER, PASSWORD)
     try:
         response = server.create_app(session_id, app, 'custom_app_with_port', False, '')
         print("App on webfaction created: %s" % response)
         return response
 
-    except xmlrpc.client.Fault:
+    except xmlrpclib.Fault:
         print("Could not create app on webfaction %s, app name maybe already in use" % app)
         sys.exit(1)
 
