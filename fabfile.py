@@ -44,7 +44,7 @@ def deploy():
 def bootstrap():
     run('mkdir -p %s/lib/python3.3' % env.home)
     run('easy_install-3.3 pip')
-    run('pip-3.3 install virtualenv virtualenvwrapper')
+    run('pip3.3 install virtualenv virtualenvwrapper')
 
 
 def install_app():
