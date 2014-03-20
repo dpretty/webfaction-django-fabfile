@@ -12,10 +12,7 @@ Requirements
 
 Fabric
 
-Makes specific asumptions of the project layout:
-
-requirements.pip file containing python requirements
-setup.py that defines a bin/manage.py (look at linconlnloop startproject for an example)
+Assumes the project layout conforms to pydanny's django cookiecutter: https://github.com/dpretty/cookiecutter-django
 
 only supports git repos atm.
 
@@ -24,17 +21,13 @@ Usage
 just drop in your repo or submodule it.
 cp fabsettings.py and adapt to your needs.
 
-And deploy:
-   fab deploy
-
-Available commands:
-   fab --list 
-   fab deploy
-   fab deploy:quick
-
+# to set up the website:
+fab setup
+# to update the website:
+fab update
 
 Thanks to David Bennett & Richard Cooper for their excellent tutorials:
 http://www.db-init.com/2010/9/16/going-green
 http://fightingrabbits.com/archives/208
 
-
+Thanks to Ashley Camba for his original fabric script, which this is based on.
