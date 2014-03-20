@@ -1,9 +1,26 @@
 # your projects settings
 
-WF_HOST       =     "example.webfaction.com"
-PROJECT_NAME  =     "foo"
-REPOSITORY    =     "git@github.com:joe/foo.git"
-USER          =     "joe"
-PASSWORD      =     "secret"
-SETTINGS_SUBDIR =   "foo"
-VIRTUALENVS   =     "/path/to/virtualenvs"
+# Webfaction website configuration
+DOMAIN_NAME      = "example.come"
+SUBDOMAIN_PREFIX   = "beta"
+APPLICATION_NAME = "myapp"
+APPLICATION_PATH = "/"
+WEBSITE_NAME     = "myapp"
+PYTHON_VERSION = '3.3'
+
+# 
+SSH_HOST       =     "example.com"
+PROJECT_NAME  =     "myproject"
+REPOSITORY    =     "myrepo.git"
+SSH_USER          = "me"
+SSH_PASSWORD      = "my_password"
+VIRTUALENVS = "/home/me/v"
+CONTROL_PANEL_USER = "me"
+CONTROL_PANEL_PASSWORD = "my_password"
+
+ENVIRONMENT_VARIABLES = {
+    "DJANGO_SECRET_KEY": "123456789123456789",
+    "DJANGO_CONFIGURATION": "Production",
+    "DJANGO_SETTINGS_MODULE": "myapp.config.settings",
+    "EMAIL_HOST_PASSWORD": "123456789123456789"
+}
