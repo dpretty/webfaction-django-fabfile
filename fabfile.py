@@ -52,6 +52,7 @@ env.environment_variables = ENVIRONMENT_VARIABLES
 # relative to django path
 env.requirements_file = 'requirements/production.txt'
 env.use_migrations = True
+env.use_https=False
 
 def get_envvar(varname):
     return run("echo $%s" %varname)
@@ -135,7 +136,7 @@ def setup_website():
             create_app(env.application_name, 'custom_app_with_port', False, '', False)
         ip_address = get_webfaction_ip()
         
-        create_website(env.website_name, ip_address, True, [subdomain], [env.application_name, env.application_path])
+        create_website(env.website_name, ip_address, env.use_https, [subdomain], [env.application_name, env.application_path])
 
 
 def get_webfaction_ip():
@@ -246,21 +247,36 @@ def install_project():
     """
 
     app_port = get_app_port(env.application_name)
-    supervisor_dir = os.path.join(env.ssh_home, 'webapps', env.supervisor_webapp)
+    webapp_dir = os.path.join(env.ssh_home, 'webapps')
+    supervisor_dir = os.path.join(webapp_dir, env.supervisor_webapp)
     workon_home = get_envvar("WORKON_HOME")
     venv_dir = os.path.join(workon_home, env.application_name)
     project_dir= os.path.join(venv_dir, env.application_name)
     config_filename = env.application_name+'.conf'
+    webapp_dir = os.path.join(webapp_dir, env.application_name)
+    start_gunicorn_path = os.path.join(webapp_dir, 'bin', 'start_gunicorn.sh')
+    run('mkdir -p %s' % os.path.join(webapp_dir, 'bin'))
+        
+    upload_template(os.path.join(env.template_dir, 'start_gunicorn.sh'),
+                    start_gunicorn_path,
+                     {
+                        'application_name': env.application_name,
+                        'virtualenv_dir': venv_dir,
+                        'webapp_dir': webapp_dir,
+                        'port': app_port,
+                      },
+                        mode=0750,
+                     )
+
 
     # upload template to supervisor conf
     upload_template(os.path.join(env.template_dir, 'gunicorn.conf'),
                     os.path.join(supervisor_dir, 'conf.d', config_filename),
-                    ###############################    EDIT LINE
                      {
                          'project': env.application_name,
+                         'start_gunicorn_path': start_gunicorn_path,
                          'project_dir': project_dir,
                          'virtualenv': venv_dir,
-                         'port': app_port,
                          'user': env.user,
                       }
                      )
@@ -281,7 +297,7 @@ def restart_app():
     config_file = os.path.join(supervisor_dir, 'supervisord.conf')
     #with cd(env.supervisor_dir):
     _ve_run(env.supervisor_venv,'supervisorctl -c %s reread && supervisorctl -c %s reload' %(config_file, config_file))
-    _ve_run(env.supervisor_venc,'supervisorctl -c %s restart %s' % env.application_name)
+    _ve_run(env.supervisor_venv,'supervisorctl -c %s restart %s' % (config_file, env.application_name))
 
 ### Webfaction API
 
